@@ -1054,6 +1054,75 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; line-height
 .dropzone svg { font-size: 28px; margin: 0 auto 6px; }
 .dropzone__t { font-size: 13.5px; font-weight: 700; color: var(--ink-soft); }
 .dropzone__s { font-size: 11.5px; margin-top: 2px; }
+.dropzone.has-images { border-color: var(--green-600); background: var(--green-50); }
+.dropzone__counter {
+  display: block; font-size: 11.5px; font-weight: 700; color: var(--green-800);
+  margin-top: 6px; font-variant-numeric: tabular-nums;
+}
+
+/* شبكة الصور المرفقة */
+.thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-top: 10px; }
+.thumbs__bar {
+  grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; font-size: 12px; font-weight: 700; color: var(--ink-soft);
+}
+.thumbbox {
+  margin: 0; border: 1px solid var(--line); border-radius: var(--r-s);
+  background: var(--paper); overflow: hidden;
+}
+.thumbbox .thumb { margin-top: 0; border: 0; border-radius: 0; width: 100%; height: 108px; object-fit: cover; }
+.thumbbox__acts {
+  display: flex; gap: 4px; padding: 6px; flex-wrap: wrap;
+  border-top: 1px solid var(--line-soft); background: var(--sand-50);
+}
+.thumbs--view .thumb { height: 150px; object-fit: cover; cursor: zoom-in; }
+
+/* ---------- التثبيت والمشاركة ---------- */
+.install-card {
+  border: 1px solid var(--green-600);
+  background: linear-gradient(140deg, var(--green-50), var(--paper));
+}
+.install-ok {
+  display: flex; align-items: center; gap: 8px;
+  font-weight: 700; color: var(--green-800);
+}
+.tile__share { margin-inline-start: auto; }
+.modal__footer .btn[data-share] svg { font-size: 15px; }
+
+/* خطوات التثبيت */
+ol.steps { margin: 8px 0 0; padding-inline-start: 20px; }
+ol.steps li { margin-bottom: 8px; font-size: 14px; line-height: 1.7; }
+ol.steps li b { color: var(--green-800); }
+
+/* شريط التثبيت أسفل الشاشة */
+.install-bar {
+  position: fixed; inset-inline: 12px; bottom: 12px; z-index: 60;
+  display: flex; align-items: center; gap: 12px;
+  background: var(--ink); color: var(--paper);
+  border-radius: var(--r-m); padding: 12px 14px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+  max-width: 520px; margin: 0 auto;
+}
+.install-bar__t { font-size: 13.5px; font-weight: 700; line-height: 1.5; }
+.install-bar__s { font-size: 11.5px; opacity: 0.8; margin-top: 2px; }
+.install-bar__acts { display: flex; gap: 6px; flex-shrink: 0; }
+.install-bar .btn { white-space: nowrap; }
+.install-bar__x {
+  background: none; border: 0; color: var(--paper); opacity: 0.7;
+  cursor: pointer; font-size: 18px; line-height: 1; padding: 4px; flex-shrink: 0;
+}
+.install-bar__x:hover { opacity: 1; }
+@media (max-width: 520px) {
+  .install-bar { flex-wrap: wrap; }
+  .install-bar__acts { width: 100%; }
+}
+
+/* عرض الصورة بالحجم الكامل */
+.lightbox { text-align: center; }
+.lightbox img {
+  max-width: 100%; max-height: 62vh; border-radius: var(--r-m);
+  border: 1px solid var(--line); display: inline-block;
+}
 
 /* --- جدول --- */
 .tablewrap { overflow-x: auto; border: 1px solid var(--line-soft); border-radius: var(--r-m); background: var(--paper); }
@@ -1196,6 +1265,78 @@ table.tbl .cell-acts { display: flex; gap: 5px; justify-content: flex-end; }
 /* ============================================================
    6) الطباعة
    ============================================================ */
+/* ============================================================
+   إحصائيات وتفاعلات لوحة التحكم
+   ============================================================ */
+.bars { display: grid; gap: 12px; }
+
+.bar__row { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 2px 10px; }
+.bar__label { font-size: 12.5px; color: var(--ink-soft); }
+.bar__value { font-size: 12.5px; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.bar__track {
+  grid-column: 1 / -1;
+  height: 8px;
+  border-radius: var(--r-full);
+  background: var(--green-50);
+  overflow: hidden;
+  border: 1px solid var(--line-soft);
+}
+.bar__fill { display: block; height: 100%; border-radius: var(--r-full); background: var(--green-600); min-width: 2px; }
+.bar__fill--gold  { background: var(--gold-600); }
+.bar__fill--amber { background: var(--amber-700); }
+.bar__fill--red   { background: var(--red-700); }
+.bar__fill--blue  { background: var(--blue-700); }
+.bar__fill--muted { background: var(--line); }
+
+.mini-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.mini {
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-s);
+  background: var(--paper);
+  padding: 10px 12px;
+}
+.mini__k { font-size: 11.5px; color: var(--ink-mute); display: block; }
+.mini__v { font-size: 20px; font-weight: 800; color: var(--green-800); font-variant-numeric: tabular-nums; }
+
+.actfeed { display: grid; gap: 2px; }
+.actfeed__item {
+  display: grid;
+  grid-template-columns: 30px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 4px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.actfeed__item:last-child { border-bottom: 0; }
+.actfeed__ico {
+  width: 30px; height: 30px;
+  display: grid; place-items: center;
+  border-radius: var(--r-full);
+  background: var(--green-50);
+  color: var(--green-700);
+  border: 1px solid var(--line-soft);
+}
+.actfeed__ico svg { width: 15px; height: 15px; }
+.actfeed__txt { min-width: 0; }
+.actfeed__what { font-size: 13px; color: var(--ink); }
+.actfeed__what b { color: var(--green-800); }
+.actfeed__meta { font-size: 11.5px; color: var(--ink-mute); }
+.actfeed__when { font-size: 11.5px; color: var(--ink-mute); white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+.rank { display: grid; gap: 8px; }
+.rank__row { display: grid; grid-template-columns: 26px 1fr auto; gap: 10px; align-items: center; }
+.rank__n {
+  width: 26px; height: 26px;
+  display: grid; place-items: center;
+  border-radius: var(--r-full);
+  background: var(--green-50);
+  color: var(--green-800);
+  font-size: 12px; font-weight: 800;
+  border: 1px solid var(--line-soft);
+}
+.rank__name { font-size: 13px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rank__v { font-size: 12.5px; font-weight: 700; color: var(--green-800); font-variant-numeric: tabular-nums; }
+
 @media print {
   .topbar, .tabbar, .sidenav, .page-head__actions, .toast, .scrim { display: none !important; }
   .content { padding: 0; }

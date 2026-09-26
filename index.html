@@ -66,11 +66,10 @@
       <p class="form-error" id="loginError" role="alert" hidden></p>
       <button class="btn btn--primary btn--block" type="submit">دخول</button>
 
-      <div class="demo-box">
-        <p class="demo-box__t">حساب التجربة (وضع المحاكاة)</p>
-        <div class="demo-box__row"><code>admin@jamaa-assa.dz</code><code>Admin@1234</code></div>
-        <div class="demo-box__row"><code>0550 00 00 00</code><code>Admin@1234</code></div>
-        <button class="btn btn--ghost btn--sm" type="button" id="fillDemo">تعبئة حساب المدير</button>
+      <div class="demo-box" id="firstRunBox" hidden>
+        <p class="demo-box__t">أول تشغيل على هذا الجهاز</p>
+        <p class="demo-box__row">لا يوجد أي حساب بعد. أنشئ حسابك وسيصبح <b>رئيس مكتب الجمعية</b> مباشرة، بلا حاجة لتأكيد.</p>
+        <button class="btn btn--primary btn--sm" type="button" id="gotoRegister">إنشاء حساب مكتب الجمعية</button>
       </div>
     </form>
 
@@ -175,6 +174,7 @@
 </div>
 
 <div class="modal-root" id="modalRoot"></div>
+<div id="installHost"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="js/data.js"></script>

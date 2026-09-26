@@ -4,7 +4,7 @@
    الهدف: جعل التطبيق قابلا للتثبيت والعمل دون اتصال بالإنترنت،
    مع استقبال الإشعارات المحلية (Push / Notification).
    ============================================================ */
-const VERSION = "jamaa-assa-v1";
+const VERSION = "jamaa-assa-v2";
 const CACHE = VERSION;
 
 const CORE = [
