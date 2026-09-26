@@ -177,6 +177,60 @@
 <div id="installHost"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<!--
+  إصلاح ذاتي محصور: يلتقط فشل تحميل أحد ملفات JS فقط (وهو عرض عدم تطابق
+  نسخة قديمة في ذاكرة عامل الخدمة) أو خطأ قبل إقلاع التطبيق.
+  لا نمسح شيئا أثناء استعمال التطبيق lest نمسح عمل المستخدم.
+  العدّاد يمنع حلقة إعادة تحميل لا نهائية.
+-->
+<script>
+  (function () {
+    var KEY = "jamaa_selfheal";
+    var MAX = 2;
+    function count() { try { return parseInt(localStorage.getItem(KEY) || "0", 10) || 0; } catch (e) { return 0; } }
+    /* app.js يضبط App.booted = true بعد نجاح الإقلاع فقط */
+    function booted() { return !!(window.APP && window.APP.App && window.APP.App.booted); }
+    var done = false;
+
+    window.jamaaSelfHeal = function (reason) {
+      if (done) return;
+      if (count() >= MAX) return;
+      done = true;
+      try { console.error("jamaa self-heal:", reason); } catch (e) {}
+      try { localStorage.setItem(KEY, String(count() + 1)); } catch (e) {}
+      var go = function () { location.replace(location.pathname + (location.search || "")); };
+      if (!("caches" in window)) { go(); return; }
+      caches.keys()
+        .then(function (ks) { return Promise.all(ks.map(function (k) { return caches.delete(k); })); })
+        .catch(function () {})
+        .then(function () {
+          if (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) {
+            return navigator.serviceWorker.getRegistrations()
+              .then(function (rs) { return Promise.all(rs.map(function (r) { return r.unregister(); })); })
+              .catch(function () {});
+          }
+        })
+        .then(go, go);
+    };
+
+    /* capture = true ضروري: حدث فشل تحميل <script> لا يصعد (لا bubbling)
+       فلا يلتقطه مستمع window العادي. المستمع بالتقاط يلتقط فشل السكربت
+       وأخطاء التنفيذ في نفس الوقت. */
+    window.addEventListener("error", function (e) {
+      /* فشل تحميل سكربت = سبب عدم فتح التطبيق غالبا */
+      if (e && e.target && e.target.tagName === "SCRIPT") {
+        window.jamaaSelfHeal("script failed: " + (e.target.src || "?"));
+        return;
+      }
+      /* أخطاء التشغيل أثناء العمل لا تلمس الذاكرة */
+      if (!booted()) window.jamaaSelfHeal("boot error: " + ((e && e.message) || ""));
+    }, true);
+    window.addEventListener("unhandledrejection", function (e) {
+      if (!booted()) window.jamaaSelfHeal("boot rejection: " + ((e && e.reason) || ""));
+    });
+  })();
+</script>
+
 <script src="js/data.js"></script>
 <script src="js/store.js"></script>
 <script src="js/api.js"></script>
@@ -184,5 +238,18 @@
 <script src="js/ui.js"></script>
 <script src="js/views.js"></script>
 <script src="js/app.js"></script>
+<script>
+  /* نرجّع عدّاد الإصلاح الذاتي إلى الصفر فقط بعد إقلاع ناجح مؤكد.
+     لا نلمسه عند التحليل: لو نُسخ هنا لأصبح العدّاد بلا فائدة ودخلت حلقة إعادة تحميل. */
+  (function () {
+    window.addEventListener("load", function () {
+      setTimeout(function () {
+        if (window.APP && window.APP.App && window.APP.App.booted) {
+          try { localStorage.removeItem("jamaa_selfheal"); } catch (e) {}
+        }
+      }, 2500);
+    });
+  })();
+</script>
 </body>
 </html>

@@ -4,7 +4,7 @@
    الهدف: جعل التطبيق قابلا للتثبيت والعمل دون اتصال بالإنترنت،
    مع استقبال الإشعارات المحلية (Push / Notification).
    ============================================================ */
-const VERSION = "jamaa-assa-v2";
+const VERSION = "jamaa-assa-v3";
 const CACHE = VERSION;
 
 const CORE = [
@@ -48,7 +48,7 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-/* ---------- الجلب: الذاكرة أولا، ثم الشبكة، ثم النسخة المخزنة ---------- */
+/* ---------- الجلب: الشبكة أولا لملفات التطبيق، ثم النسخة المخزنة ---------- */
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
@@ -69,35 +69,28 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  /* التنقل: من الشبكة أولا لتحديث index.html، مع بديل مخزن */
-  if (req.mode === "navigate") {
-    event.respondWith(
-      fetch(req)
-        .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put("./index.html", copy)).catch(() => {});
-          return res;
-        })
-        .catch(() => caches.match("./index.html").then((r) => r || caches.match("./")))
-    );
-    return;
-  }
-
-  /* باقي الملفات: الذاكرة أولا */
+  /* نفس الأصل: الشبكة أولا ثم النسخة المخزنة.
+     سبب الاعتماد على الشبكة: التطبيق كله في المتصفح، وأي اختلاف بين
+     index.html و js/*.js (نسخة قديمة من الذاكرة) يوقف الإقلاع بصفحة بيضاء.
+     المخزن يبقى كبديل وحيد عند انقطاع الإنترنت. */
   event.respondWith(
-    caches.match(req).then(
-      (hit) =>
-        hit ||
-        fetch(req)
-          .then((res) => {
-            if (res && res.status === 200 && res.type === "basic") {
-              const copy = res.clone();
-              caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
-            }
-            return res;
-          })
-          .catch(() => hit)
-    )
+    fetch(req)
+      .then((res) => {
+        if (res && res.status === 200 && res.type === "basic") {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+        }
+        return res;
+      })
+      .catch(() =>
+        caches.match(req).then(
+          (hit) =>
+            hit ||
+            (req.mode === "navigate"
+              ? caches.match("./index.html").then((r) => r || caches.match("./"))
+              : undefined)
+        )
+      )
   );
 });
 
