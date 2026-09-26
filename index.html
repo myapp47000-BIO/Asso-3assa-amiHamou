@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>جمعية حي العسة — بلدية العطف | غرداية</title>
+<meta name="description" content="تطبيق تفاعلي لجمعية حي العسة ببلدية العطف - تجنينت - ولاية غرداية: إشعارات، قسم البيئة، الحملات التطوعية، الإعلانات، المستجدات البلدية، التبليغات، والأرقام المهمة.">
+<meta name="theme-color" content="#175A47">
+<meta name="color-scheme" content="light dark">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="حي العسة">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ======================= شاشة الدخول / التسجيل ======================= -->
+<div class="auth-screen" id="authScreen" hidden>
+  <div class="auth-screen__art" aria-hidden="true">
+    <svg viewBox="0 0 100 100" fill="none" class="auth-screen__emblem">
+      <circle cx="50" cy="50" r="44" stroke="#C69442" stroke-width="3"/>
+      <path d="M30 70 H44 V56 H56 V42 H68 V28 H72 V70 H30 Z" fill="#F7F1E4"/>
+    </svg>
+  </div>
+
+  <div class="auth-card">
+    <header class="auth-card__head">
+      <p class="auth-card__eyebrow">بلدية العطف &middot; تجنينت &middot; ولاية غرداية</p>
+      <h1 class="auth-card__title">جمعية حي العسة</h1>
+      <p class="auth-card__sub" id="authSub">منصة رقمية تفاعلية للسكان والأعضاء</p>
+    </header>
+
+    <div class="seg" role="tablist" id="authTabs">
+      <button class="seg__btn is-active" data-mode="login" role="tab" aria-selected="true">تسجيل الدخول</button>
+      <button class="seg__btn" data-mode="register" role="tab" aria-selected="false">عضوية جديدة</button>
+    </div>
+
+    <div class="mock-banner" id="mockBanner" hidden>
+      <b>وضع المحاكاة مفعّل.</b>
+      <span>رسائل SMS لا تُرسل فعلياً. يُعرض كود التفعيل داخل الشاشة، ويُستعمل نفس الكود للتجربة. لتفعيل الإرسال الحقيقي، غيّر المزوّد من <em>لوحة التحكم ← الإعدادات</em>.</span>
+    </div>
+
+    <!-- تسجيل الدخول -->
+    <form class="auth-form" id="loginForm" novalidate>
+      <label class="field">
+        <span class="field__label">البريد الإلكتروني أو رقم الهاتف</span>
+        <input class="input" type="text" name="identifier" autocomplete="username" placeholder="exemple@email.com أو 0550 00 00 00" required>
+      </label>
+      <label class="field">
+        <span class="field__label">كلمة المرور</span>
+        <span class="field__wrap">
+          <input class="input" type="password" name="password" autocomplete="current-password" placeholder="••••••••" required>
+          <button class="field__toggle" type="button" data-toggle-pass>إظهار</button>
+        </span>
+      </label>
+      <label class="check">
+        <input type="checkbox" name="remember" checked>
+        <span>تذكّرني على هذا الجهاز</span>
+      </label>
+      <p class="form-error" id="loginError" role="alert" hidden></p>
+      <button class="btn btn--primary btn--block" type="submit">دخول</button>
+
+      <div class="demo-box">
+        <p class="demo-box__t">حساب التجربة (وضع المحاكاة)</p>
+        <div class="demo-box__row"><code>admin@jamaa-assa.dz</code><code>Admin@1234</code></div>
+        <div class="demo-box__row"><code>0550 00 00 00</code><code>Admin@1234</code></div>
+        <button class="btn btn--ghost btn--sm" type="button" id="fillDemo">تعبئة حساب المدير</button>
+      </div>
+    </form>
+
+    <!-- التسجيل -->
+    <form class="auth-form" id="registerForm" novalidate hidden>
+      <label class="field">
+        <span class="field__label">الاسم واللقب <i>مطلوب</i></span>
+        <input class="input" type="text" name="name" autocomplete="name" placeholder="مثال: محمد الأمين بوقرة" required>
+      </label>
+      <label class="field">
+        <span class="field__label">البريد الإلكتروني <i>مطلوب</i></span>
+        <input class="input" type="email" name="email" autocomplete="email" placeholder="exemple@email.com" dir="ltr" required>
+      </label>
+      <label class="field">
+        <span class="field__label">رقم الهاتف <i>مطلوب — يُستعمل لتأكيد الحساب</i></span>
+        <span class="field__wrap field__wrap--tel">
+          <span class="tel-prefix">+213</span>
+          <input class="input" type="tel" name="phone" autocomplete="tel" inputmode="tel" placeholder="0550 00 00 00" dir="ltr" required>
+        </span>
+      </label>
+      <label class="field">
+        <span class="field__label">كلمة المرور <i>مطلوب</i></span>
+        <span class="field__wrap">
+          <input class="input" type="password" name="password" autocomplete="new-password" placeholder="8 أحرف على الأقل" required>
+          <button class="field__toggle" type="button" data-toggle-pass>إظهار</button>
+        </span>
+        <span class="meter" data-meter><i style="width:0%"></i></span>
+        <small class="hint" data-meter-label>قوة كلمة المرور: —</small>
+      </label>
+      <label class="field">
+        <span class="field__label">تأكيد كلمة المرور <i>مطلوب</i></span>
+        <span class="field__wrap">
+          <input class="input" type="password" name="password2" autocomplete="new-password" placeholder="أعد كتابة كلمة المرور" required>
+          <button class="field__toggle" type="button" data-toggle-pass>إظهار</button>
+        </span>
+      </label>
+      <label class="check">
+        <input type="checkbox" name="terms" required>
+        <span>أقر بقراءة <a href="#about" data-goto-about>ميثاق الجمعية</a> وسياسة الاستعمال، وأوافق على استعمال بياناتي لإرسال الإشعارات.</span>
+      </label>
+      <p class="form-error" id="registerError" role="alert" hidden></p>
+      <button class="btn btn--primary btn--block" type="submit">إنشاء الحساب والمتابعة</button>
+    </form>
+
+    <!-- تأكيد الكود -->
+    <form class="auth-form" id="activateForm" novalidate hidden>
+      <div class="activate-head">
+        <span class="activate-head__icon" id="activateIcon"></span>
+        <h2 class="auth-card__title auth-card__title--sm">تأكيد الحساب</h2>
+        <p class="auth-card__sub" id="activateHint"></p>
+      </div>
+      <ol class="otp" id="otpInputs" aria-label="كود التفعيل">
+        <li><input type="text" inputmode="numeric" maxlength="1" autocomplete="one-time-code" aria-label="الرقم 1"></li>
+        <li><input type="text" inputmode="numeric" maxlength="1" aria-label="الرقم 2"></li>
+        <li><input type="text" inputmode="numeric" maxlength="1" aria-label="الرقم 3"></li>
+        <li><input type="text" inputmode="numeric" maxlength="1" aria-label="الرقم 4"></li>
+        <li><input type="text" inputmode="numeric" maxlength="1" aria-label="الرقم 5"></li>
+        <li><input type="text" inputmode="numeric" maxlength="1" aria-label="الرقم 6"></li>
+      </ol>
+      <p class="otp-state">
+        <span id="otpTimer">—</span>
+        <span id="otpTries">5 محاولات متبقية</span>
+      </p>
+      <div class="mock-code" id="mockCode" hidden>
+        <span>كود المحاكاة (SMS غير مُرسَل):</span><b id="mockCodeValue">000000</b>
+        <button class="btn btn--ghost btn--xs" type="button" id="copyMock">نسخ</button>
+      </div>
+      <p class="form-error" id="activateError" role="alert" hidden></p>
+      <button class="btn btn--primary btn--block" type="submit" id="verifyBtn">تأكيد الحساب</button>
+      <div class="auth-form__row">
+        <button class="btn btn--ghost btn--sm" type="button" id="resendCode">إعادة إرسال الكود</button>
+        <button class="btn btn--ghost btn--sm" type="button" id="cancelActivate">تغيير الرقم</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ======================= التطبيق ======================= -->
+<div class="app" id="app" hidden>
+  <header class="topbar" id="topbar">
+    <button class="topbar__burger" id="burger" aria-label="القائمة" aria-expanded="false"></button>
+    <div class="topbar__id">
+      <p class="topbar__eyebrow" id="topEyebrow">بلدية العطف &middot; ولاية غرداية</p>
+      <h1 class="topbar__title" id="topTitle">جمعية حي العسة</h1>
+    </div>
+    <div class="topbar__actions">
+      <button class="iconbtn" id="bellBtn" aria-label="الإشعارات">
+        <span class="iconbtn__badge" id="bellBadge" hidden>0</span>
+      </button>
+      <button class="iconbtn" id="userBtn" aria-label="حسابي"></button>
+    </div>
+  </header>
+
+  <div class="scrim" id="scrim" hidden></div>
+
+  <div class="shell">
+    <nav class="sidenav" id="sidenav" aria-label="التنقل الرئيسي"></nav>
+    <main class="content" id="view" tabindex="-1"></main>
+  </div>
+
+  <nav class="tabbar" id="tabbar" aria-label="التنقل السريع"></nav>
+</div>
+
+<div class="modal-root" id="modalRoot"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="js/data.js"></script>
+<script src="js/store.js"></script>
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/views.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
