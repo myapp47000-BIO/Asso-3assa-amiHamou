@@ -239,13 +239,17 @@
 <script src="js/views.js"></script>
 <script src="js/app.js"></script>
 <script>
-  /* نرجّع عدّاد الإصلاح الذاتي إلى الصفر فقط بعد إقلاع ناجح مؤكد.
-     لا نلمسه عند التحليل: لو نُسخ هنا لأصبح العدّاد بلا فائدة ودخلت حلقة إعادة تحميل. */
+  /* حارس الإقلاع + تصفير العدّاد.
+     أخطر حالة لا تُنتج استثناء: نسخة قديمة من js/*.js تعمل بلا خطأ ظاهر، فتظهر
+     شاشة الدخول ولا يفعل شيء. لا يوجد خطأ، فنراقب App.booted بأنفسنا. */
   (function () {
+    function ok() { return !!(window.APP && window.APP.App && window.APP.App.booted); }
     window.addEventListener("load", function () {
       setTimeout(function () {
-        if (window.APP && window.APP.App && window.APP.App.booted) {
+        if (ok()) {
           try { localStorage.removeItem("jamaa_selfheal"); } catch (e) {}
+        } else {
+          window.jamaaSelfHeal("boot never completed (stale assets?)");
         }
       }, 2500);
     });
