@@ -1,14 +1,16 @@
 @echo off
 REM ============================================================
-REM  جمعية حي العسة - تشغيل التطبيق محليا
+REM  جمعية حي العسة - تشغيل التطبيق محليا + على الهاتف
 REM  الاستعمال:  start.cmd
-REM  يفتح الخادم إن لم يكن يعمل، ثم يفتح المتصفح.
+REM  يفتح الخادم على كل الواجهات، يطبع رابط الهاتف، ثم يفتح المتصفح.
 REM  لإيقاف الخادم:  stop.cmd
 REM ============================================================
 setlocal enabledelayedexpansion
 cd /d "%~dp0"
 set PORT=8765
-set URL=http://127.0.0.1:%PORT%/index.html
+set BASE=http://127.0.0.1:%PORT%/
+set URL=%BASE%index.html
+set DIAG=%BASE%dev/diagnose.html
 
 echo.
 echo   جمعية حي العسة  -  خادم محلي
@@ -30,30 +32,50 @@ if not defined PY (
   exit /b 1
 )
 
-REM --- هل الخادم يعمل؟ ---
 powershell -NoProfile -Command "try{$r=Invoke-WebRequest '%URL%' -UseBasicParsing -TimeoutSec 4;exit 0}catch{exit 1}" >nul 2>nul
-if errorlevel 1 (
-  echo   تشغيل الخادم على المنفذ %PORT% ...
-  start "" /min cmd /c "%PY% -m http.server %PORT% --bind 127.0.0.1"
-  REM انتظار حتى يستجيب
-  for /l %%i in (1,1,20) do (
-    powershell -NoProfile -Command "try{$r=Invoke-WebRequest '%URL%' -UseBasicParsing -TimeoutSec 2;exit 0}catch{exit 1}" >nul 2>nul
-    if not errorlevel 1 goto :ready
-    ping -n 1 -w 250 127.0.0.1 >nul
-  )
-  echo   [X] فشل تشغيل الخادم. جرّب تشغيله يدويا:
-  echo         cd /d "%~dp0"
-  echo         %PY% -m http.server %PORT% --bind 127.0.0.1
-  echo.
-  pause
-  exit /b 1
+if not errorlevel 1 goto :ready
+
+echo   تشغيل الخادم على المنفذ %PORT% ...
+REM بدون --bind  =>  يستمع على كل الواجهات حتى يصله الهاتف
+start "" /min cmd /c "%PY% -m http.server %PORT%"
+for /l %%i in (1,1,20) do (
+  powershell -NoProfile -Command "try{$r=Invoke-WebRequest '%URL%' -UseBasicParsing -TimeoutSec 2;exit 0}catch{exit 1}" >nul 2>nul
+  if not errorlevel 1 goto :ready
+  ping -n 1 -w 250 127.0.0.1 >nul
 )
+echo   [X] فشل تشغيل الخادم. جرّبه يدويا:
+echo         cd /d "%~dp0"
+echo         %PY% -m http.server %PORT%
+echo.
+pause
+exit /b 1
 
 :ready
-echo   [OK] الخادم يعمل:  %URL%
+echo   [OK] الخادم يعمل.
 echo.
-echo   تنبيه؟ إن لم يفتح التطبيق راجع صفحة التشخيص:
-echo         %URL:~0,-11%dev/diagnose.html
+
+REM --- عنوان الهاتف ---
+set "LAN="
+for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /c:"IPv4 Address"') do (
+  set "IP=%%a"
+  set "IP=!IP: =!"
+  if "!IP:~0,7!"=="192.168"    set "LAN=!IP!"
+  if "!IP:~0,5!"=="10.0"      if not defined LAN set "LAN=!IP!"
+)
+if defined LAN (
+  echo   على الهاتف (نفس شبكة الواي فاي) افتح:
+  echo.
+  echo       http://!LAN!:%PORT%/index.html
+  echo.
+  echo   [مهم] الهاتف والجهاز يجب أن يكونا على نفس الشبكة.
+) else (
+  echo   لم أتمكن من معرفة عنوان الشبكة.
+  echo   شغّل:  ipconfig   وابحث عن IPv4
+)
+
+echo.
+echo   هذه روابط تشخيص:
+echo       %DIAG%
 echo.
 echo   فتح المتصفح ...
 start "" "%URL%"
